@@ -14,3 +14,9 @@ class SignUpForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email', 'password', 'confirm_password', )
+
+class LoginForm(forms.Form):
+    email = forms.CharField(
+        required=True, help_text="Email address required.", max_length=100)
+
+    password = forms.CharField(required=True)
