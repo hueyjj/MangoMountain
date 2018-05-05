@@ -27,6 +27,14 @@ python manage.py makemigration # Save changes for model
 python manage.py migrate # Migrate database
 ```
 
+## Django Setup
+```
+django-admin startproject PROJECT_NAME # Create django application
+```
+```
+python manage.py startapp APP_NAME # Create Django app
+```
+
 
 ## API Routes
 Login
