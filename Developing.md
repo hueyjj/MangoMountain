@@ -50,6 +50,6 @@ Create an account
 ```
 username - User username
 password - User password
-password_confirm - User password confirmation
+confirm_password - User password confirmation
 ```
 Response: create account success status, invalid username/password/password confirmation status, or some uknown invalid status.
