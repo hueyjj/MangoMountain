@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -42,8 +42,17 @@ def login_user(request):
                return HttpResponse("Login success")
 
            return HttpResponse("No user found")
+       # TODO Log user automatically if user has valid session
        else:
            return HttpResponse(form.errors)
            #return HttpResponse("Invalid form")
 
     return HttpResponse("Invalid login")
+
+
+@csrf_exempt
+def logout_user(request):
+    if request.method == "POST":
+        logout(request)
+        return HttpResponse("Logout successful")
+    return HttpResponse("Require POST request to logout")
