@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SignUpForm, LoginForm
@@ -41,20 +41,20 @@ def login_user(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
+            # User is already logged in
+            if request.user.is_authenticated:
+                return JsonResponse({ "message": "Login success: User already logged in", }, status=200)
+
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
 
             user = authenticate(request, username=email, password=password)
-
             if user:
                 login(request, user)
-                return HttpResponse("Login success", status=200)
-
+                return JsonResponse({ "message": "Login success", }, status=200)
             return HttpResponse("No user found", status=400)
-        # TODO Log user automatically if user has valid session
         else:
             return HttpResponse(form.errors)
-            # return HttpResponse("Invalid form")
 
     return HttpResponse("Invalid login", status=400)
 
