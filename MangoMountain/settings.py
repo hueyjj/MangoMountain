@@ -56,6 +56,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
     "localhost:3000",
+    "skadoosh-115.herokuapp.com",
 )
 
 ROOT_URLCONF = 'MangoMountain.urls'
