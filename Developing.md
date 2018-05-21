@@ -35,6 +35,10 @@ django-admin startproject PROJECT_NAME # Create django application
 python manage.py startapp APP_NAME # Create Django app
 ```
 
+## Heroku 
+```
+heroku run python manage.py loaddata course_info_fixture.json # Load course data into database
+```
 
 ## API Routes
 Login
