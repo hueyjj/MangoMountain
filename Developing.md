@@ -39,6 +39,10 @@ python manage.py startapp APP_NAME # Create Django app
 ```
 heroku run python manage.py loaddata course_info_fixture.json # Load course data into database
 ```
+```
+heroku run python manage.py makemigrations
+heroku run python manage.py migrate
+```
 
 ## API Routes
 Login
