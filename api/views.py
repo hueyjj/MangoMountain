@@ -121,5 +121,5 @@ def course(request):
                 return JsonResponse({"message": "Course does not exist", }, status=400)
             return JsonResponse({"message": "Got your course request", }, status=400)
         else:
-            return JsonResponse({"message": "Invalid course form", }, status=400)
+            return JsonResponse({"message": "Invalid course form - ", "error": form.errors.as_json(), }, status=400)
     return JsonResponse({"message": "Invalid course request", }, status=400)
