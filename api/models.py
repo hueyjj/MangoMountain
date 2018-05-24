@@ -4,6 +4,7 @@ class SectionLab(models.Model):
     """
     Model representing a section and lab
     """
+    course_num = models.IntegerField(default=0, blank=True)
     class_id = models.CharField(max_length=999, blank=True)
     time = models.CharField(max_length=999, blank=True)
     instructor = models.CharField(max_length=999, blank=True)
@@ -13,7 +14,7 @@ class SectionLab(models.Model):
     status = models.CharField(max_length=999, blank=True)
 
     def __str__(self):
-        return ""
+        return "Section for " + self.class_id 
 
 
 class Course(models.Model):

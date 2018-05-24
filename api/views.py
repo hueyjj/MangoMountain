@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import SignUpForm, LoginForm
+from .forms import SignUpForm, LoginForm, CourseForm
+from .models import Course, SectionLab
 
 
 @csrf_exempt
@@ -65,3 +66,60 @@ def logout_user(request):
         logout(request)
         return JsonResponse({"message": "Logout successful", }, status=200)
     return JsonResponse({"message": "Require POST request to logout", }, status=400)
+
+
+@csrf_exempt
+def course(request):
+    if request.method == "POST":
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            course_num = form.cleaned_data["course_num"]
+            try:
+                course = Course.objects.get(class_num=course_num)
+
+                section_and_labs = []
+                section_labs_objects = SectionLab.objects.filter(course_num__in=[course.class_num])
+                for section_lab in section_labs_objects:
+                    section_and_labs.append({
+                        "course_num": section_lab.course_num,
+                        "class_id": section_lab.class_id,
+                        "time": section_lab.time,
+                        "instructor": section_lab.instructor,
+                        "location": section_lab.location,
+                        "enrollment": section_lab.enrollment,
+                        "wait": section_lab.wait,
+                        "status": section_lab.status,
+                    })
+
+                json_course = {
+                    "title": course.title,
+                    "description": course.description,
+                    "class_notes": course.class_notes,
+                    "available_seats": course.available_seats,
+                    "career": course.career,
+                    "class_num": course.class_num,
+                    "credits": course.credits,
+                    "enrolled": course.enrolled,
+                    "enrollment_capacity": course.enrollment_capacity,
+                    "general_education": course.general_education,
+                    "grading": course.grading,
+                    "status": course.status,
+                    "type": course.type,
+                    "waitlist_capacity": course.waitlist_capacity,
+                    "waitlist_total": course.waitlist_total,
+                    "days_and_times": course.days_and_times,
+                    "instructor": course.instructor,
+                    "meeting_dates": course.meeting_dates,
+                    "room": course.room,
+                    "section_and_labs": section_and_labs,
+                }
+                return JsonResponse({
+                    "message": "Valid course request",
+                    "course": json_course
+                }, status=200)
+            except Course.DoesNotExist:
+                return JsonResponse({"message": "Course does not exist", }, status=400)
+            return JsonResponse({"message": "Got your course request", }, status=400)
+        else:
+            return JsonResponse({"message": "Invalid course form", }, status=400)
+    return JsonResponse({"message": "Invalid course request", }, status=400)

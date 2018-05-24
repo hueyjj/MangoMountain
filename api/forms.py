@@ -20,3 +20,15 @@ class LoginForm(forms.Form):
         required=True, help_text="Email address required.", max_length=100)
 
     password = forms.CharField(required=True)
+
+class CourseForm(forms.Form):
+    term = forms.CharField()
+    status = forms.CharField()
+    subject = forms.CharField()
+    course_num = forms.IntegerField()
+    course_title_key_word = forms.CharField()
+    instructor_last_name = forms.CharField()
+    general_education = forms.CharField()
+    course_units = forms.CharField()
+    meeting_days = forms.CharField()
+    course_career = forms.CharField()
