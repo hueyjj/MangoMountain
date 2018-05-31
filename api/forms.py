@@ -34,11 +34,11 @@ class CourseForm(forms.Form):
     course_career = forms.CharField(required=False)
 
 class CreateReviewForm(forms.Form):
+    subject = forms.CharField(required=True)
+    term = forms.CharField(required=True)
     course_title = forms.CharField(required=True)
-    date_posted = forms.CharField(required=True)
-    author = forms.CharField(required=True)
-    comment = forms.CharField(required=True)
     rating = forms.IntegerField(required=True)
+    comment = forms.CharField(required=True)
 
 class ReviewForm(forms.Form):
     search_term = forms.CharField(required=True)

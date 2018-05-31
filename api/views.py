@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+from django.core import serializers
+
 
 from .forms import SignUpForm, LoginForm, CourseForm, CreateReviewForm, ReviewForm
 from .models import Course, SectionLab, Review
@@ -131,20 +134,29 @@ def create_review(request):
     if request.method == "POST":
         form = CreateReviewForm(request.POST)
         if form.is_valid():
+            subject = form.cleaned_data["subject"]
+            term = form.cleaned_data["term"]
             course_title = form.cleaned_data["course_title"]
-            date_posted = form.cleaned_data["date_posted"]
-            author = form.cleaned_data["author"]
-            comment = form.cleaned_data["comment"]
             rating = form.cleaned_data["rating"]
+            comment = form.cleaned_data["comment"]
+
+            if request.user and request.user.is_authenticated:
+                # TODO
+                author = "INPUT USER HERE"
+            else:
+                author = "Anonymous"
 
             Review.objects.create(
+                subject=subject,
+                term=term,
                 course_title=course_title,
-                date_posted=date_posted,
-                author=author,
-                comment=comment,
                 rating=rating,
+                comment=comment,
+                author=author,
             ).save()
             return JsonResponse({"message": "New review created", }, status=200)
+        else:
+            return JsonResponse({"message": "Invalid create review form request", "error": form.errors.as_json(), }, status=400)
     return JsonResponse({"message": "Invalid review creation request", }, status=400)
 
 
@@ -154,7 +166,26 @@ def find_review(request):
         form = ReviewForm(request.POST)
         if form.is_valid():
             search_term = form.cleaned_data["search_term"]
+
+            # Split search terms by white space and check every column in a row of reviews for a match
+            qset = Q()
+            for term in search_term.split():
+                qset |= Q(subject__icontains=term)
+                qset |= Q(term__icontains=term)
+                qset |= Q(course_title__icontains=term)
+                qset |= Q(rating__icontains=term)
+                qset |= Q(comment__icontains=term)
+                qset |= Q(author__icontains=term)
+
+            matching_results = Review.objects.filter(qset)
+
+            if len(matching_results) == 0:
+                print("No matches found")
+
+            matching_results = serializers.serialize("json", matching_results)
+
             return JsonResponse({
                 "message": "Valid review request",
+                "reviews": matching_results,
             }, status=200)
     return JsonResponse({"message": "Invalid review request", }, status=400)

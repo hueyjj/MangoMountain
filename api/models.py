@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class SectionLab(models.Model):
     """
@@ -54,13 +55,23 @@ class Review(models.Model):
     Model representing a Review
     """
 
+    subject = models.CharField(max_length=300, blank=True)
+    term = models.CharField(max_length=300, blank=True)
     course_title = models.CharField(max_length=300, blank=True)
-    date_posted = models.CharField(max_length=300, blank=True)
-    author = models.CharField(max_length=300, blank=True)
-    comment = models.CharField(max_length=300, blank=True)
     rating = models.IntegerField(default=0)
+    comment = models.CharField(max_length=300, blank=True)
+
+    author = models.CharField(max_length=300, blank=True)
+
+    created = models.DateTimeField(editable=False, null=True)
+    modified = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.course_title + " review by " + self.author
+    
+    def save(self, *args, **kwargs):
+        self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Review, self).save(*args, **kwargs)
 
 
