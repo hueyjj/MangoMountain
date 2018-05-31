@@ -48,3 +48,19 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
+
+class Review(models.Model):
+    """
+    Model representing a Review
+    """
+
+    course_title = models.CharField(max_length=300, blank=True)
+    date_posted = models.CharField(max_length=300, blank=True)
+    author = models.CharField(max_length=300, blank=True)
+    comment = models.CharField(max_length=300, blank=True)
+    rating = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.course_title + " review by " + self.author
+
+

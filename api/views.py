@@ -4,8 +4,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import SignUpForm, LoginForm, CourseForm
-from .models import Course, SectionLab
+from .forms import SignUpForm, LoginForm, CourseForm, CreateReviewForm, ReviewForm
+from .models import Course, SectionLab, Review
 
 
 @csrf_exempt
@@ -78,7 +78,8 @@ def course(request):
                 course = Course.objects.get(class_num=course_num)
 
                 section_and_labs = []
-                section_labs_objects = SectionLab.objects.filter(course_num__in=[course.class_num])
+                section_labs_objects = SectionLab.objects.filter(
+                    course_num__in=[course.class_num])
                 for section_lab in section_labs_objects:
                     section_and_labs.append({
                         "course_num": section_lab.course_num,
@@ -115,7 +116,7 @@ def course(request):
                 }
                 return JsonResponse({
                     "message": "Valid course request",
-                    "course": json_course
+                    "course": json_course,
                 }, status=200)
             except Course.DoesNotExist:
                 return JsonResponse({"message": "Course does not exist", }, status=400)
@@ -123,3 +124,37 @@ def course(request):
         else:
             return JsonResponse({"message": "Invalid course form - ", "error": form.errors.as_json(), }, status=400)
     return JsonResponse({"message": "Invalid course request", }, status=400)
+
+
+@csrf_exempt
+def create_review(request):
+    if request.method == "POST":
+        form = CreateReviewForm(request.POST)
+        if form.is_valid():
+            course_title = form.cleaned_data["course_title"]
+            date_posted = form.cleaned_data["date_posted"]
+            author = form.cleaned_data["author"]
+            comment = form.cleaned_data["comment"]
+            rating = form.cleaned_data["rating"]
+
+            Review.objects.create(
+                course_title=course_title,
+                date_posted=date_posted,
+                author=author,
+                comment=comment,
+                rating=rating,
+            ).save()
+            return JsonResponse({"message": "New review created", }, status=200)
+    return JsonResponse({"message": "Invalid review creation request", }, status=400)
+
+
+@csrf_exempt
+def find_review(request):
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            search_term = form.cleaned_data["search_term"]
+            return JsonResponse({
+                "message": "Valid review request",
+            }, status=200)
+    return JsonResponse({"message": "Invalid review request", }, status=400)

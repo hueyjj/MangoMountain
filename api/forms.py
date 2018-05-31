@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import User
 
 
 class SignUpForm(forms.ModelForm):
@@ -32,3 +32,13 @@ class CourseForm(forms.Form):
     course_units = forms.CharField(required=False)
     meeting_days = forms.CharField(required=False)
     course_career = forms.CharField(required=False)
+
+class CreateReviewForm(forms.Form):
+    course_title = forms.CharField(required=True)
+    date_posted = forms.CharField(required=True)
+    author = forms.CharField(required=True)
+    comment = forms.CharField(required=True)
+    rating = forms.IntegerField(required=True)
+
+class ReviewForm(forms.Form):
+    search_term = forms.CharField(required=True)
