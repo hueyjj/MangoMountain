@@ -77,8 +77,8 @@ def course(request):
         form = CourseForm(request.POST)
         if form.is_valid():
             #term = form.cleaned_data["term"]
-            status = form.cleaned_data["status"]
             #subject = form.cleaned_data["subject"]
+            status = form.cleaned_data["status"]
             course_num = form.cleaned_data["course_num"]
             course_title_key_word = form.cleaned_data["course_title_key_word"]
             instructor_last_name = form.cleaned_data["instructor_last_name"]
@@ -87,23 +87,22 @@ def course(request):
             meeting_days = form.cleaned_data["meeting_days"]
             course_career = form.cleaned_data["course_career"]
             try:
-                
+
+                # Forgive me for I have sinned...
                 qset = Q()
                 #qset |= Q(term__icontains=term)
-                qset |= Q(status__icontains=status)
                 #qset |= Q(subject__icontains=subject)
-                qset |= Q(class_num__icontains=course_num)
+                qset |= Q(status__iregex=r"\y{0}\y".format(status)) if len(status) > 0 else Q()
+                qset |= Q(class_num__iregex=r"\y{0}\y".format(course_num)) if course_num else Q()
                 for word in course_title_key_word.split():
-                    qset |= Q(title__icontains=word)
-                qset |= Q(instructor__icontains=instructor_last_name)
-                qset |= Q(general_education__icontains=general_education)
-                qset |= Q(credits__icontains=course_units)
-                qset |= Q(days_and_times__icontains=meeting_days)
-                qset |= Q(career__icontains=course_career)
+                    qset |= Q(title__iregex=r"\y{0}\y".format(word)) if len(word) > 0 else Q()
+                qset |= Q(instructor__iregex=r"\y{0}\y".format(instructor_last_name)) if len(instructor_last_name) > 0 else Q()
+                qset |= Q(general_education__iregex=r"\y{0}\y".format(general_education)) if len(general_education) > 0 else Q()
+                qset |= Q(credits__iregex=r"\y{0}\y".format(course_units)) if len(course_units) > 0 else Q()
+                qset |= Q(days_and_times__iregex=r"\y{0}\y".format(meeting_days)) if len(meeting_days) > 0 else Q()
+                qset |= Q(career__iregex=r"\y{0}\y".format(course_career)) if len(course_career) > 0 else Q()
 
                 course_results = Course.objects.filter(qset)[:10]
-
-                #course = Course.objects.get(class_num=course_num)
 
                 courses = []
                 for course in course_results:
