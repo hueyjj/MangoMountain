@@ -76,50 +76,79 @@ def course(request):
     if request.method == "POST":
         form = CourseForm(request.POST)
         if form.is_valid():
+            #term = form.cleaned_data["term"]
+            status = form.cleaned_data["status"]
+            #subject = form.cleaned_data["subject"]
             course_num = form.cleaned_data["course_num"]
+            course_title_key_word = form.cleaned_data["course_title_key_word"]
+            instructor_last_name = form.cleaned_data["instructor_last_name"]
+            general_education = form.cleaned_data["general_education"]
+            course_units = form.cleaned_data["course_units"]
+            meeting_days = form.cleaned_data["meeting_days"]
+            course_career = form.cleaned_data["course_career"]
             try:
-                course = Course.objects.get(class_num=course_num)
+                
+                qset = Q()
+                #qset |= Q(term__icontains=term)
+                qset |= Q(status__icontains=status)
+                #qset |= Q(subject__icontains=subject)
+                qset |= Q(class_num__icontains=course_num)
+                for word in course_title_key_word.split():
+                    qset |= Q(title__icontains=word)
+                qset |= Q(instructor__icontains=instructor_last_name)
+                qset |= Q(general_education__icontains=general_education)
+                qset |= Q(credits__icontains=course_units)
+                qset |= Q(days_and_times__icontains=meeting_days)
+                qset |= Q(career__icontains=course_career)
 
-                section_and_labs = []
-                section_labs_objects = SectionLab.objects.filter(
-                    course_num__in=[course.class_num])
-                for section_lab in section_labs_objects:
-                    section_and_labs.append({
-                        "course_num": section_lab.course_num,
-                        "class_id": section_lab.class_id,
-                        "time": section_lab.time,
-                        "instructor": section_lab.instructor,
-                        "location": section_lab.location,
-                        "enrollment": section_lab.enrollment,
-                        "wait": section_lab.wait,
-                        "status": section_lab.status,
-                    })
+                course_results = Course.objects.filter(qset)[:10]
 
-                json_course = {
-                    "title": course.title,
-                    "description": course.description,
-                    "class_notes": course.class_notes,
-                    "available_seats": course.available_seats,
-                    "career": course.career,
-                    "class_num": course.class_num,
-                    "credits": course.credits,
-                    "enrolled": course.enrolled,
-                    "enrollment_capacity": course.enrollment_capacity,
-                    "general_education": course.general_education,
-                    "grading": course.grading,
-                    "status": course.status,
-                    "type": course.type,
-                    "waitlist_capacity": course.waitlist_capacity,
-                    "waitlist_total": course.waitlist_total,
-                    "days_and_times": course.days_and_times,
-                    "instructor": course.instructor,
-                    "meeting_dates": course.meeting_dates,
-                    "room": course.room,
-                    "section_and_labs": section_and_labs,
-                }
+                #course = Course.objects.get(class_num=course_num)
+
+                courses = []
+                for course in course_results:
+                    section_and_labs = []
+                    section_labs_objects = SectionLab.objects.filter(
+                        course_num__in=[course.class_num])
+                    for section_lab in section_labs_objects:
+                        section_and_labs.append({
+                            "course_num": section_lab.course_num,
+                            "class_id": section_lab.class_id,
+                            "time": section_lab.time,
+                            "instructor": section_lab.instructor,
+                            "location": section_lab.location,
+                            "enrollment": section_lab.enrollment,
+                            "wait": section_lab.wait,
+                            "status": section_lab.status,
+                        })
+
+                    json_course = {
+                        "title": course.title,
+                        "description": course.description,
+                        "class_notes": course.class_notes,
+                        "available_seats": course.available_seats,
+                        "career": course.career,
+                        "class_num": course.class_num,
+                        "credits": course.credits,
+                        "enrolled": course.enrolled,
+                        "enrollment_capacity": course.enrollment_capacity,
+                        "general_education": course.general_education,
+                        "grading": course.grading,
+                        "status": course.status,
+                        "type": course.type,
+                        "waitlist_capacity": course.waitlist_capacity,
+                        "waitlist_total": course.waitlist_total,
+                        "days_and_times": course.days_and_times,
+                        "instructor": course.instructor,
+                        "meeting_dates": course.meeting_dates,
+                        "room": course.room,
+                        "section_and_labs": section_and_labs,
+                    }
+                    courses.append(json_course)
+
                 return JsonResponse({
                     "message": "Valid course request",
-                    "course": json_course,
+                    "courses": courses,
                 }, status=200)
             except Course.DoesNotExist:
                 return JsonResponse({"message": "Course does not exist", }, status=400)
