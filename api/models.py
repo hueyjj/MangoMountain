@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class SectionLab(models.Model):
     """
@@ -74,4 +75,13 @@ class Review(models.Model):
         self.modified = timezone.now()
         return super(Review, self).save(*args, **kwargs)
 
+class ChatComment(models.Model):
+    """
+    Model representing a chat comment
+    """
 
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    description = models.TextField(max_length=1000, help_text="Enter comment about class here.")
+    created = models.DateTimeField(editable=False, null=True)
+    modified = models.DateTimeField(null=True)
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
