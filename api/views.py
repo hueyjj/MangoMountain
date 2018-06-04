@@ -70,6 +70,17 @@ def logout_user(request):
         return JsonResponse({"message": "Logout successful", }, status=200)
     return JsonResponse({"message": "Require POST request to logout", }, status=400)
 
+@csrf_exempt
+def profile(request):
+    if request.method == "GET":
+        if request.user.is_authenticated:
+            username = request.user.username
+            return JsonResponse({
+                "message": "Profile request successful", 
+                "username": username,
+            }, status=200)
+
+    return JsonResponse({"message": "Require POST request and user login for profile data", }, status=400)
 
 @csrf_exempt
 def course(request):
