@@ -103,15 +103,15 @@ def course(request):
                 qset = Q()
                 #qset |= Q(term__icontains=term)
                 #qset |= Q(subject__icontains=subject)
-                qset |= Q(status__iregex=r"\y{0}\y".format(status)) if len(status) > 0 else Q()
-                qset |= Q(class_num__iregex=r"\y{0}\y".format(course_num)) if course_num else Q()
+                qset &= Q(status__iregex=r"\y{0}\y".format(status)) if len(status) > 0 else Q()
+                qset &= Q(class_num__iregex=r"\y{0}\y".format(course_num)) if course_num else Q()
                 for word in course_title_key_word.split():
-                    qset |= Q(title__iregex=r"\y{0}\y".format(word)) if len(word) > 0 else Q()
-                qset |= Q(instructor__iregex=r"\y{0}\y".format(instructor_last_name)) if len(instructor_last_name) > 0 else Q()
-                qset |= Q(general_education__iregex=r"\y{0}\y".format(general_education)) if len(general_education) > 0 else Q()
-                qset |= Q(credits__iregex=r"\y{0}\y".format(course_units)) if len(course_units) > 0 else Q()
-                qset |= Q(days_and_times__iregex=r"\y{0}\y".format(meeting_days)) if len(meeting_days) > 0 else Q()
-                qset |= Q(career__iregex=r"\y{0}\y".format(course_career)) if len(course_career) > 0 else Q()
+                    qset &= Q(title__iregex=r"\y{0}\y".format(word)) if len(word) > 0 else Q()
+                qset &= Q(instructor__iregex=r"\y{0}\y".format(instructor_last_name)) if len(instructor_last_name) > 0 else Q()
+                qset &= Q(general_education__iregex=r"\y{0}\y".format(general_education)) if len(general_education) > 0 else Q()
+                qset &= Q(credits__iregex=r"\y{0}\y".format(course_units)) if len(course_units) > 0 else Q()
+                qset &= Q(days_and_times__iregex=r"\y{0}\y".format(meeting_days)) if len(meeting_days) > 0 else Q()
+                qset &= Q(career__iregex=r"\y{0}\y".format(course_career)) if len(course_career) > 0 else Q()
 
                 course_results = Course.objects.filter(qset)[:10]
 
