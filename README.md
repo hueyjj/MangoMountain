@@ -1,3 +1,6 @@
+# MangoMountain
+This repository holds the Django backend for [Skadoosh.](https://github.com/hueyjj/Skadoosh)
+
 ## Enable Virtual Environment
 ```
 cd MangoMountain
@@ -6,6 +9,12 @@ source env/Scripts/activate # Windows
 ```
 
 ## Install Requirements
+- pip
+- virtualenv
+- postgresql
+    - create database: skadoosh
+- python 3
+
 ```
 pip install -r requirements.txt
 ```
