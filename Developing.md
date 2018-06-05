@@ -17,6 +17,8 @@ pip freeze > requirements.txt # Save requirements
 ```
 python manage.py runserver # Starts the server
 ```
+
+## Additional Usage
 ```
 python manage.py createsuperuser # Creates user with all privileges and permissions
 ```
@@ -45,19 +47,67 @@ heroku run python manage.py migrate
 ```
 
 ## API Routes
-Login
-- /api/login (POST)
-```
-username - User username
-password - User password
-```
-Response: login success status, invalid credential status, or some unknown invalid status.
-
 Create an account
-- /api/create-account (POST)
+- /api/signup (POST)
 ```
-username - User username
+email - User email
 password - User password
 confirm_password - User password confirmation
 ```
 Response: create account success status, invalid username/password/password confirmation status, or some uknown invalid status.
+
+Login
+- /api/login (POST)
+```
+email - User email
+password - User password
+```
+Response: login success status, invalid credential status, or some unknown invalid status.
+
+Logout
+- /api/logout (POST)
+```
+<Send cookies>
+```
+Response: success or fail status
+
+Profile
+- /api/profile (POST)
+```
+<Send cookies>
+```
+Response: user data or fail status
+
+Course
+- /api/course (POST)
+```
+term - School term
+status - Course status (open, closed, all)
+subject - Course subject
+course_num - Course number
+course_title_key_word - Key words to search for
+instructor_last_name - Instructor's last name
+general_education - A general education option
+course_units - How many course units to filter for
+meeting_days - Specific days to search for
+course_career - User course status (undergraduate/graduate)
+```
+Response: list of courses found in the database, or error if invalid form
+
+Create Review
+- /api/create_review (POST)
+```
+subject - Course subject
+term - Course term
+course_title - Course title
+rating - Course rating
+comment - User comments about the course
+```
+Response: success or fail status
+
+Find Reviews
+- /api/find_review (POST)
+```
+search_term - Key words to filter reviews by
+```
+Response: list of reviews found in the database, or error if invalid form
