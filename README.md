@@ -1,6 +1,8 @@
 # MangoMountain
 This repository holds the Django backend for [Skadoosh.](https://github.com/hueyjj/Skadoosh)
 
+The course data is obtained via python scripts at [gobbler](https://github.com/hueyjj/gobbler).
+
 ## Enable Virtual Environment
 ```
 cd MangoMountain
